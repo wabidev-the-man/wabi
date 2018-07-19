@@ -561,6 +561,13 @@ UniValue listaddressgroupings(const UniValue& params, bool fHelp)
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
+     CAmount nMinAmount = 0;
+     if (request.params.size() > 0)
+          nMinAmount = AmountFromValue(request.params[0]);
+
+     if (nMinAmount < 0)
+          throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
+
     UniValue jsonGroupings(UniValue::VARR);
     map<CTxDestination, CAmount> balances = pwalletMain->GetAddressBalances();
     BOOST_FOREACH(set<CTxDestination> grouping, pwalletMain->GetAddressGroupings())
